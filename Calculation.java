@@ -87,4 +87,26 @@ public class Calculation {
         return listeDistances;
     }
     
+    public static final float R = 6372.8f;
+    public float haversine(float lat1, float lon1, float lat2, float lon2) {
+        float dLat = (float)Math.toRadians(lat2 - lat1);
+        float dLon = (float)Math.toRadians(lon2 - lon1);
+        lat1 = (float)Math.toRadians(lat1);
+        lat2 = (float)Math.toRadians(lat2);
+ 
+        float a = (float) (Math.pow(Math.sin(dLat / 2),2) + Math.pow(Math.sin(dLon / 2),2) * Math.cos(lat1) * Math.cos(lat2));
+        float c = (float)(2 * Math.asin(Math.sqrt(a)));
+        return R * c;
+    }
+    
+    public float calculationTime(Square origin, Criteria destination)
+    {
+        float latOri = origin.getLat();
+        float lonOri = origin.getLon();
+        float latDes = destination.getLat();
+        float lonDes = destination.getLon();
+        return haversine(latOri, lonOri, latDes, lonDes);
+        
+    }
+    
 }

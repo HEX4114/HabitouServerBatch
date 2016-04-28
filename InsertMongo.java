@@ -17,7 +17,6 @@ import org.bson.Document;
  */
 public class InsertMongo {
     public InsertMongo(Square square, Criteria bestAtmW, Criteria bestAtmD, 
-                                      Criteria bestTransW, Criteria bestTransD, 
                                       Criteria bestSuperW, Criteria bestSuperD){
         MongoClient mongoClient = new MongoClient();
         MongoDatabase db = mongoClient.getDatabase("habitoudb");
@@ -38,45 +37,36 @@ public class InsertMongo {
                         new Document()
                         .append("walk", 
                                 new Document()
+                                .append("name", bestAtmW.getName())
                                 .append("time", bestAtmW.getTime())
                                 .append("lat", bestAtmW.getLat())
                                 .append("long", bestAtmW.getLon())
+                                
                         )
                         .append("drive", 
                                 new Document()
+                                .append("name", bestAtmD.getName())
                                 .append("time", bestAtmD.getTime())
                                 .append("lat", bestAtmD.getLat())
                                 .append("long", bestAtmD.getLon())
+                                
                         )
                 )
                 .append("supermarket",
                         new Document()
                         .append("walk", 
                                 new Document()
+                                .append("name", bestSuperW.getName())
                                 .append("time", bestSuperW.getTime())
                                 .append("lat", bestSuperW.getLat())
                                 .append("long", bestSuperW.getLon())
                         )
                         .append("drive", 
                                 new Document()
+                                .append("name", bestSuperD.getName())
                                 .append("time", bestSuperD.getTime())
                                 .append("lat", bestSuperD.getLat())
                                 .append("long", bestSuperD.getLon())
-                        )
-                )
-                .append("transport",
-                        new Document()
-                        .append("walk", 
-                                new Document()
-                                .append("time", bestTransW.getTime())
-                                .append("lat", bestTransW.getLat())
-                                .append("long", bestTransW.getLon())
-                        )
-                        .append("drive", 
-                                new Document()
-                                .append("time", bestTransD.getTime())
-                                .append("lat", bestTransD.getLat())
-                                .append("long", bestTransD.getLon())
                         )
                 )
         );
