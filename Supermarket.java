@@ -10,7 +10,7 @@
  */
 public class Supermarket extends Criteria{
     
-    public Supermarket(float lat, float lon, float time) {
-        super(lat, lon, time);
+    public Supermarket(float lat, float lon, float time, String name) {
+        super(lat, lon, time, name);
     }
 }

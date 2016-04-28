@@ -10,7 +10,7 @@
  */
 public class Transport extends Criteria{
     
-    public Transport(float lat, float lon, float time) {
-        super(lat, lon, time);
+    public Transport(float lat, float lon, float time, String name) {
+        super(lat, lon, time, name);
     }
 }

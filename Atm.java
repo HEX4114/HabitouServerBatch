@@ -10,8 +10,8 @@
  */
 public class Atm extends Criteria{
     
-    public Atm(float lat, float lon, float time) {
-        super(lat, lon, time);
+    public Atm(float lat, float lon, float time, String name) {
+        super(lat, lon, time, name);
     }
     
 }
