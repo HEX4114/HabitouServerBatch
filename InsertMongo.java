@@ -41,6 +41,7 @@ public class InsertMongo {
                                 .append("time", bestAtmW.getTime())
                                 .append("lat", bestAtmW.getLat())
                                 .append("long", bestAtmW.getLon())
+                                .append("distance", bestAtmW.getDistance())
                                 
                         )
                         .append("drive", 
@@ -49,6 +50,7 @@ public class InsertMongo {
                                 .append("time", bestAtmD.getTime())
                                 .append("lat", bestAtmD.getLat())
                                 .append("long", bestAtmD.getLon())
+                                .append("distance", bestAtmD.getDistance())
                                 
                         )
                 )
@@ -60,6 +62,7 @@ public class InsertMongo {
                                 .append("time", bestSuperW.getTime())
                                 .append("lat", bestSuperW.getLat())
                                 .append("long", bestSuperW.getLon())
+                                .append("Distance", bestSuperW.getDistance())
                         )
                         .append("drive", 
                                 new Document()
@@ -67,6 +70,7 @@ public class InsertMongo {
                                 .append("time", bestSuperD.getTime())
                                 .append("lat", bestSuperD.getLat())
                                 .append("long", bestSuperD.getLon())
+                                .append("distance", bestSuperD.getDistance())
                         )
                 )
         );

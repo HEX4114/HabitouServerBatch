@@ -11,12 +11,14 @@
 public abstract class Criteria extends Square{
     
     private float time;
+    private float distance;
     private String name;
     
-    public Criteria(float x, float y, float time, String name) {
+    public Criteria(float x, float y, float time, float distance, String name) {
         super(x, y);
         this.time = time;
         this.name = name;
+        this.distance = distance;
     }
     
     public void setTime(float t){
@@ -25,6 +27,14 @@ public abstract class Criteria extends Square{
     
     public float getTime(){
         return this.time;
+    }
+    
+    public void setDistance(float d){
+        this.distance = d;
+    }
+    
+    public float getDistance(){
+        return this.distance;
     }
     
     public void setName(String name){

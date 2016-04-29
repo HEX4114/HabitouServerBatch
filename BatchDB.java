@@ -108,11 +108,11 @@ public class BatchDB {
         //TEST réécriture 4.
         for(Square square : grid.listeSquare)
         {
-            Atm bestAtmW = new Atm(0,0,0, "");
-            Atm bestAtmD = new Atm(0,0,0, "");
+            Atm bestAtmW = new Atm(0,0,0,0,"");
+            Atm bestAtmD = new Atm(0,0,0,0,"");
 
-            Supermarket bestSuperW = new Supermarket(0,0,0, "");
-            Supermarket bestSuperD = new Supermarket(0,0,0, "");
+            Supermarket bestSuperW = new Supermarket(0,0,0,0, "");
+            Supermarket bestSuperD = new Supermarket(0,0,0,0, "");
             for(criteriasEnum criteria: criteriasEnum.values()){
                 listTemp.clear();
                     switch(criteria) {
@@ -129,12 +129,14 @@ public class BatchDB {
                                         bestAtmD.setLat(bestCTemps.getLat());
                                         bestAtmD.setLon(bestCTemps.getLon());
                                         bestAtmD.setName(bestCTemps.getName());
+                                        bestAtmD.setDistance(bestCTemps.getDistance());
                                         break;
                                     case 1 :    //WALKING
                                         bestAtmW.setTime(bestCTemps.getTime());
                                         bestAtmW.setLat(bestCTemps.getLat());
                                         bestAtmW.setLon(bestCTemps.getLon());
                                         bestAtmW.setName(bestCTemps.getName());
+                                        bestAtmW.setDistance(bestCTemps.getDistance());
                                         break;
                                 }
                             }
@@ -151,12 +153,14 @@ public class BatchDB {
                                         bestSuperD.setLat(bestCTemps.getLat());
                                         bestSuperD.setLon(bestCTemps.getLon());
                                         bestSuperD.setName(bestCTemps.getName());
+                                        bestSuperD.setDistance(bestCTemps.getDistance());
                                         break;
                                     case 1 :    //WALKING
                                         bestSuperW.setTime(bestCTemps.getTime());
                                         bestSuperW.setLat(bestCTemps.getLat());
                                         bestSuperW.setLon(bestCTemps.getLon());
                                         bestSuperW.setName(bestCTemps.getName());
+                                        bestSuperW.setDistance(bestCTemps.getDistance());
                                         break;
                                 }
                             }
@@ -207,9 +211,9 @@ public class BatchDB {
                 bestCDis = listTemp.get(i);
             }
         }
-        List<Criteria> bestCriteria = new ArrayList<>();
-        bestCriteria.add(bestCDis);
-        bestCDis = calc.nearestCriteria(context, square, bestCriteria, modeTransport);
+//        List<Criteria> bestCriteria = new ArrayList<>();
+//        bestCriteria.add(bestCDis);
+//        bestCDis = calc.nearestCriteria(context, square, bestCriteria, modeTransport);
         return bestCDis;
     }
     
