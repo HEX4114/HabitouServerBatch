@@ -41,7 +41,7 @@ public class Grid {
         {
             for(float j=4.81f; j<4.871f; j+=nLong)      //GRAND LYON(float j=4.66f; j<5.07f; j+=nLong)    //Longitude
             {
-                listeSquare.add(new Square(i,j));
+                listeSquare.add(new Square(i+nLat/2,j+nLong/2));
             }
         }        
     }
