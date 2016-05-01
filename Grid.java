@@ -9,17 +9,6 @@ package ServerBatch;
 
 import java.util.ArrayList;
 import java.util.List;
-
-//Import Mongo
-import com.mongodb.Block;
-import com.mongodb.MongoClient;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoDatabase;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.Locale;
-import org.bson.Document;
-
 /**
  *
  * @author adrien
@@ -44,9 +33,13 @@ public class Grid {
          */       
     
     public void initGrid(){
-        for(float i=45.74f; i<45.78005f; i+=nLat)         //GRAND LYON(float i=45.56f; i<45.92f; i+=nLat)       //Latitude
+        //Latitude
+        //for(float i=45.74f; i<45.78005f; i+=nLat) //zoom sur Lyon
+        for(float i=45.56f; i<45.92f; i+=nLat)      //Grand Lyon
         {
-            for(float j=4.81f; j<4.87005f; j+=nLong)      //GRAND LYON(float j=4.66f; j<5.07f; j+=nLong)    //Longitude
+            //Longitude
+            //for(float j=4.81f; j<4.87005f; j+=nLong)  //zoom sur Lyon     
+            for(float j=4.66f; j<5.07f; j+=nLong)       //Grand Lyon
             {
                 listeSquare.add(new Square(i+nLat/2,j+nLong/2));
             }

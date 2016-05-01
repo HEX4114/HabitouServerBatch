@@ -105,7 +105,7 @@ public class Calculation {
     
     public float getInfos(String responseServer, String info)
     {
-        float duration = 0f;
+        float response = 0f;
         String durationPart = "";
         String[] responseParsed = responseServer.split(",");
         for(int i = 0; i < responseParsed.length; i++)
@@ -119,9 +119,9 @@ public class Calculation {
                 }
             }
         }
-        duration = Float.parseFloat(durationPart);
+        response = Float.parseFloat(durationPart);
         
-        return duration;
+        return response;
     }
     
     public String GetRequest(int mode, String origin, String destination)
