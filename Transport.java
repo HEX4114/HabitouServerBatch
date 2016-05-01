@@ -8,6 +8,9 @@
  *
  * @author adrie
  */
+
+package ServerBatch;
+
 public class Transport extends Criteria{
     
     public Transport(float lat, float lon, float time, float distance, String name) {

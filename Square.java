@@ -1,3 +1,6 @@
+package ServerBatch;
+
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -9,6 +12,9 @@
  *
  * @author adrie
  */
+
+
+
 public class Square {
     private float lat;
     private float lon;
@@ -18,8 +24,13 @@ public class Square {
         this.lon = y;
     }
     
-    public String getPosition(){
-        String s = Float.toString(lat) + ", " + Float.toString(lon); 
+    public String getPositionGoogle(){
+        String s = Float.toString(lat) + "," + Float.toString(lon); 
+        return s;
+    }
+    
+    public String getPositionOsrm(){
+        String s = Float.toString(lon) + "," + Float.toString(lat); 
         return s;
     }
     

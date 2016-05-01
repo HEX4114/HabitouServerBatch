@@ -1,9 +1,15 @@
+package ServerBatch;
 
 import com.google.maps.DistanceMatrixApi;
 import com.google.maps.GeoApiContext;
 import com.google.maps.model.DistanceMatrix;
 import com.google.maps.model.TravelMode;
 import com.google.maps.model.Unit;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Route;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,16 +25,17 @@ import java.util.logging.Logger;
  *
  * @author adrie
  */
+
 public class Calculation {
     
-    public Criteria nearestCriteria(GeoApiContext context, Square origin, List<Criteria> criterias, int mode){
+    public Criteria nearestCriteriaGoogle(GeoApiContext context, Square origin, List<Criteria> criterias, int mode){
         //on envoie une liste de 100 criteria
         Criteria nearCriteria = criterias.get(0);
         String[] positionsCriteria = new String[criterias.size()];
         for(int i = 0; i < criterias.size(); i++){
-            positionsCriteria[i] = criterias.get(i).getPosition();
+            positionsCriteria[i] = criterias.get(i).getPositionGoogle();
         }
-         long [] times = calculationTimeSquare(context, origin.getPosition(), positionsCriteria, mode);
+         long [] times = calculationTimeSquareGoogle(context, origin.getPositionGoogle(), positionsCriteria, mode);
          //TODO : get le min et l'index pour connaitre le criteria
          long minT = times[0];
          int minIndex = 0;
@@ -45,7 +52,94 @@ public class Calculation {
         return nearCriteria;
     }
     
-    public long[] calculationTimeSquare(GeoApiContext context, String origin, String[] destinations, int mode){
+    public Criteria nearestCriteriaOsrm(GeoApiContext context, Square origin, List<Criteria> criterias, int mode,  Criteria bestWalkingCriteria) throws IOException{
+        Criteria nearCriteria = criterias.get(0);
+        
+         List<Criteria> criteriasCalculated = calculationTimeSquareOsrm(context, origin, criterias, mode, bestWalkingCriteria);
+         float minT = criteriasCalculated.get(0).getTime();
+         int minIndex = 0;
+         for (int i = 0; i< criteriasCalculated.size(); i++)
+         {
+             if (criteriasCalculated.get(i).getTime()<minT) 
+             {
+                 minT = criteriasCalculated.get(i).getTime();
+                 minIndex = i;
+             }
+         }
+        criterias.get(minIndex).setTime(criteriasCalculated.get(minIndex).getTime());
+        criterias.get(minIndex).setDistance(criteriasCalculated.get(minIndex).getDistance());
+        nearCriteria = criterias.get(minIndex);
+        return nearCriteria;
+    }
+    
+    public List<Criteria> calculationTimeSquareOsrm(GeoApiContext context, Square origin, List<Criteria> destinations, int mode, Criteria bestWalkingCriteria) throws MalformedURLException, IOException{
+        if(bestWalkingCriteria.getTime() < 180 && mode==1)
+        {
+            List<Criteria> dest = new ArrayList<>();
+            dest.add(bestWalkingCriteria);
+            return dest;
+        }
+        
+        String[] positionsCriteria = new String[destinations.size()];
+        for(int i = 0; i < destinations.size(); i++){
+            positionsCriteria[i] = destinations.get(i).getPositionOsrm();
+        }
+        
+        // issue the Get request
+        RequestServer requestServer = new RequestServer();
+        String getResponse = "";
+        for(int i = 0; i < destinations.size(); i++)
+        {
+            String request = GetRequest(mode, origin.getPositionOsrm(), positionsCriteria[i]);
+            getResponse = requestServer.doGetRequest(request);
+            //TODO : parser to obtain duration for each destination and put it into distances
+            float duration = getInfos(getResponse, "duration");
+            float distance = getInfos(getResponse, "distance");
+            destinations.get(i).setTime(duration/2);
+            destinations.get(i).setDistance(distance/2);
+            
+        }
+        
+        return destinations;
+    }
+    
+    public float getInfos(String responseServer, String info)
+    {
+        float duration = 0f;
+        String durationPart = "";
+        String[] responseParsed = responseServer.split(",");
+        for(int i = 0; i < responseParsed.length; i++)
+        {
+            if(responseParsed[i].contains("\""+info+"\":"))
+            {
+                durationPart = responseParsed[i].split(":")[1];
+                if(info == "distance")
+                {
+                    durationPart = durationPart.substring(0, durationPart.length()-2);
+                }
+            }
+        }
+        duration = Float.parseFloat(durationPart);
+        
+        return duration;
+    }
+    
+    public String GetRequest(int mode, String origin, String destination)
+    {
+        String port = "";
+        if(mode == 0)
+        {
+            port = "5001";
+        }
+        else if (mode == 1) 
+        {
+            port = "5000";
+        }
+        String request = "http://127.0.0.1:" + port + "/trip/v1/driving/" + origin + ";" + destination;
+        return request;
+    }
+    
+    public long[] calculationTimeSquareGoogle(GeoApiContext context, String origin, String[] destinations, int mode){
         long[] listeDistances = new long[destinations.length];
         
         DistanceMatrix matrix = null;
@@ -99,7 +193,7 @@ public class Calculation {
         return R * c;
     }
     
-    public float calculationTime(Square origin, Criteria destination)
+    public float calculationTimeBird(Square origin, Criteria destination)
     {
         float latOri = origin.getLat();
         float lonOri = origin.getLon();

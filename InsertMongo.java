@@ -1,9 +1,4 @@
-
-import com.mongodb.Block;
-import com.mongodb.MongoClient;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
+package ServerBatch;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -15,13 +10,21 @@ import org.bson.Document;
  *
  * @author adrie
  */
-public class InsertMongo {
-    public InsertMongo(Square square, Criteria bestAtmW, Criteria bestAtmD, 
-                                      Criteria bestSuperW, Criteria bestSuperD){
-        MongoClient mongoClient = new MongoClient();
-        MongoDatabase db = mongoClient.getDatabase("habitoudb");
 
-        FindIterable<Document> iterable = db.getCollection("Habitou").find();
+import com.mongodb.Block;
+import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+
+
+
+
+ public class InsertMongo {
+    public InsertMongo(MongoDatabase db ,Square square, Criteria bestAtmW, Criteria bestAtmD, 
+                                      Criteria bestSuperW, Criteria bestSuperD){
+
+        /*FindIterable<Document> iterable = db.getCollection("squares").find();
 
         iterable.forEach(new Block<Document>() {
             @Override
@@ -29,7 +32,8 @@ public class InsertMongo {
             {
                 System.out.println(document);
             }  
-        });   
+        }); */
+        
         db.getCollection("squares").insertOne(
                 new Document("lat", square.getLat())
                 .append("long", square.getLon())
@@ -74,5 +78,6 @@ public class InsertMongo {
                         )
                 )
         );
+        //System.out.println("ok :"+square.toString());
     }
 }

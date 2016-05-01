@@ -8,6 +8,9 @@
  *
  * @author adrie
  */
+
+package ServerBatch;
+
 public class Supermarket extends Criteria{
     
     public Supermarket(float lat, float lon, float time, float distance, String name) {

@@ -1,3 +1,5 @@
+package ServerBatch;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -22,11 +24,16 @@ import org.bson.Document;
  *
  * @author adrien
  */
+
+
+
 public class Grid {
 
     List<Square> listeSquare = new ArrayList<Square>();  
-    float nLat = 0.0025f; //Lat
-    float nLong = 0.0025f; //Long 
+//    float nLat = 0.001f; //Lat
+//    float nLong = 0.0015f; //Long 
+    float nLat = 0.0005f; //Lat
+    float nLong = 0.00075f; //Long 
         
         /**
          * Carré du grand lyon
@@ -37,9 +44,9 @@ public class Grid {
          */       
     
     public void initGrid(){
-        for(float i=45.74f; i<45.781f; i+=nLat)         //GRAND LYON(float i=45.56f; i<45.92f; i+=nLat)       //Latitude
+        for(float i=45.74f; i<45.78005f; i+=nLat)         //GRAND LYON(float i=45.56f; i<45.92f; i+=nLat)       //Latitude
         {
-            for(float j=4.81f; j<4.871f; j+=nLong)      //GRAND LYON(float j=4.66f; j<5.07f; j+=nLong)    //Longitude
+            for(float j=4.81f; j<4.87005f; j+=nLong)      //GRAND LYON(float j=4.66f; j<5.07f; j+=nLong)    //Longitude
             {
                 listeSquare.add(new Square(i+nLat/2,j+nLong/2));
             }
