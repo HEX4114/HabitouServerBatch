@@ -28,6 +28,8 @@ public class BatchDB {
     public static int[] criterias = {0,1,2};
     public static int[] modeTransports = {0,1}; //0=W & 1=D
     private static Calculation calc = new Calculation();
+    
+    //--Google API keys
     //private static GeoApiContext context = new GeoApiContext().setApiKey("AIzaSyBh8bdjTT0HU92B7lwlRUyQ6q0X23Wfiks");  //A
     private static GeoApiContext context = new GeoApiContext().setApiKey("AIzaSyArobVSwthXEPCYJFsepnC0yRz13ER9EQU");    //F
     //private static GeoApiContext context = new GeoApiContext().setApiKey("AIzaSyDnq20kQLytsbe5Idn4qL-2HoJ2mLwL5v4");  //M
@@ -38,90 +40,37 @@ public class BatchDB {
         MongoClient mongoClient = new MongoClient();
         MongoDatabase db = mongoClient.getDatabase("habitoudb");
         
-        //1. Get Jsonfile from OSM
-        String jsonFileName = "output.json";
-        File file = new File("");
-        String jsonFilePath = file.getAbsolutePath() + File.separator + jsonFileName;
+        //--Init lists of Criterias
+        List<Atm> listAtm = new ArrayList<>(); 
+        List<Supermarket> listSuper = new ArrayList<>();
         
-        //2.init Grid
+        String fileName = "data_filtered.osm";
+        File file = new File("");
+        String path = file.getAbsolutePath()+"/Data_Osmosis/";
+        OsmParser osm = new OsmParser(fileName, path, listAtm, listSuper);
+        osm.parse();
+        listAtm = osm.getAtms();
+        //for (int i =0; i<listAtm.size(); i++){System.out.println("name : " + listAtm.get(i).getName());}
+        listSuper = osm.getSupermarkets();
+        
+        //--Init Grid
         Grid grid = new Grid();
         grid.initGrid();
-        System.out.println(grid.listeSquare.size());
         
-        //3.Create and add object into List from JsonFile
-        List<Atm> listAtm = new ArrayList<>(); 
-        List<Supermarket> listSuper = new ArrayList<>(); 
+        //--Print informations
+        System.out.println("Number of squares : " + grid.listSquare.size());
+        System.out.println("Number of atms : " + listAtm.size());
+        System.out.println("Number of supermarkets : " + listSuper.size());
         
-        try{
-            Scanner scanner = new Scanner(new File(jsonFilePath));
-            String jsonObj = "";
-            String jsonObjType = "";
-            String line = scanner.nextLine();
-            
-            while(!line.contains("{"))
-            {
-                line = scanner.nextLine();
-            }
-            int nbBracket = 0;
-            while (scanner.hasNextLine()) 
-            {
-                
-                jsonObj += line;                
-                
-                if(line.contains("{"))
-                {
-                    nbBracket++;
-                } else if (line.contains("}"))
-                {
-                    nbBracket--;
-                    if(nbBracket == 0)
-                    {
-                        if(jsonObj.endsWith(","))
-                        {
-                            jsonObj = jsonObj.substring(0, jsonObj.length()-1);
-                        }
-                        switch (jsonObjType) {
-                            case "atm" :
-                                Atm atm = new Gson().fromJson(jsonObj, Atm.class);
-                                listAtm.add(atm);
-                            case "supermarket" :
-                                Supermarket supermarket = new Gson().fromJson(jsonObj, Supermarket.class);
-                                listSuper.add(supermarket);
-                                break;
-                        }
-                        jsonObj = "";
-                        jsonObjType = "";
-                    }
-                }
-                if(line.contains("type")){
-                    line = line.replaceAll(" ", "");  
-                    line = line.replaceAll("\"type\":\"", "");
-                    line = line.replaceAll("\",", ""); 
-                    if (line.equals("atm"))
-                    {
-                        jsonObjType = "atm";
-                    } else if (line.equals("supermarket"))
-                    {
-                        jsonObjType = "supermarket";
-                    }
-                }
-                line = scanner.nextLine();
-                
-            }   
-            scanner.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        
-        //TEST réécriture 4.
+        //--Calculation of best criterias
         List<Criteria> listTemp = new ArrayList<>();
-        for(Square square : grid.listeSquare)
+        for(Square square : grid.listSquare)
         {
-            Atm bestAtmW = new Atm(0,0,0,0,"");
-            Atm bestAtmD = new Atm(0,0,0,0,"");
-
-            Supermarket bestSuperW = new Supermarket(0,0,0,0, "");
-            Supermarket bestSuperD = new Supermarket(0,0,0,0, "");
+            //--Init best criterias
+            Atm bestAtmW = new Atm(0f,0f,0f,0f,"");
+            Atm bestAtmD = new Atm(0f,0f,0f,0f,"");
+            Supermarket bestSuperW = new Supermarket(0f,0f,0f,0f, "");
+            Supermarket bestSuperD = new Supermarket(0f,0f,0f,0f, "");
             
             for(criteriasEnum criteria: criteriasEnum.values()){
                 listTemp.clear();
@@ -131,7 +80,7 @@ public class BatchDB {
                             listTemp = reduceListForSquare(square, listTemp);
                             
                             for(int modeTransport : modeTransports){
-//                              Criteria bestCTemps = getBestCTimeGoogle(square, listTemp, modeTransport); 
+                                //Criteria bestCTemps = getBestCTimeGoogle(square, listTemp, modeTransport); 
                                 Criteria bestCTemps = getBestCTimeOsrm(square, listTemp, modeTransport, bestAtmW); 
                                 switch(modeTransport){
                                     case 0 :    //Walking
@@ -179,18 +128,14 @@ public class BatchDB {
                             break;
                     }
             }
+            //--Insertion of square in mongo database
             InsertMongo im = new InsertMongo(db, square, bestAtmW, bestAtmD, bestSuperW, bestSuperD);
         }
-    }
+    }//--end main
     
-    public static List<Criteria> cloneList(List<Criteria> list) {
-        List<Criteria> clone = new ArrayList<>(list.size());
-        for (int i = 0; i < list.size(); i++) {
-            clone.add(list.get(i));
-        }
-        return clone;  
-    }
     
+    
+    //--FUNCTIONS
     public static List<Criteria> reduceListForSquare (Square square,List<Criteria> criterias)
     {
         float minDist = calc.calculationTimeBird(square, criterias.get(0));

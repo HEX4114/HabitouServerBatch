@@ -36,7 +36,6 @@ public class Calculation {
             positionsCriteria[i] = criterias.get(i).getPositionGoogle();
         }
          long [] times = calculationTimeSquareGoogle(context, origin.getPositionGoogle(), positionsCriteria, mode);
-         //TODO : get le min et l'index pour connaitre le criteria
          long minT = times[0];
          int minIndex = 0;
          for (int i = 0; i< times.length; i++)
@@ -95,8 +94,8 @@ public class Calculation {
             //TODO : parser to obtain duration for each destination and put it into distances
             float duration = getInfos(getResponse, "duration");
             float distance = getInfos(getResponse, "distance");
-            destinations.get(i).setTime(duration/2);
-            destinations.get(i).setDistance(distance/2);
+            destinations.get(i).setTime(duration);
+            destinations.get(i).setDistance(distance);
             
         }
         
@@ -106,20 +105,20 @@ public class Calculation {
     public float getInfos(String responseServer, String info)
     {
         float response = 0f;
-        String durationPart = "";
+        String responsePart = "";
         String[] responseParsed = responseServer.split(",");
         for(int i = 0; i < responseParsed.length; i++)
         {
             if(responseParsed[i].contains("\""+info+"\":"))
             {
-                durationPart = responseParsed[i].split(":")[1];
+                responsePart = responseParsed[i].split(":")[1];
                 if(info == "distance")
                 {
-                    durationPart = durationPart.substring(0, durationPart.length()-2);
+                    responsePart = responsePart.substring(0, responsePart.length()-2);
                 }
             }
         }
-        response = Float.parseFloat(durationPart);
+        response = Float.parseFloat(responsePart);
         
         return response;
     }
@@ -135,7 +134,7 @@ public class Calculation {
         {
             port = "5000";
         }
-        String request = "http://127.0.0.1:" + port + "/trip/v1/driving/" + origin + ";" + destination;
+        String request = "http://127.0.0.1:" + port + "/route/v1/driving/" + origin + ";" + destination;
         return request;
     }
     
