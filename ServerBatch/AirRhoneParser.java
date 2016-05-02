@@ -32,16 +32,14 @@ public class AirRhoneParser {
         List<StationPollution> listPol = new ArrayList<>();
         Scanner scanner = new Scanner(new File(path + File.separator + fileName));
         String line = scanner.nextLine();
-        System.out.println(line);
         while(scanner.hasNext())
         {
             line = scanner.nextLine();
-            System.out.println(line);
             float lat = getLat(line);
             float lon = getLong(line);
             String name = getName(line);
             float polRate = getPolRate(line);
-            StationPollution staPol = new StationPollution(lat, lon, name, polRate);
+            StationPollution staPol = new StationPollution(lat, lon, name, polRate, 0f);
             listPol.add(staPol);
         }
         
@@ -73,7 +71,6 @@ public class AirRhoneParser {
         String [] lineParsed = line.split(";");
         for(int i = 5; i < lineParsed.length; i++)
         {
-            System.out.println("***"+lineParsed[i]+"***");
             if(lineParsed[i].equals("-"))
             {
                 monthMissed++;

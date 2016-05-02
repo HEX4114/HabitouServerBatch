@@ -13,12 +13,38 @@ package ServerBatch;
 public class StationPollution extends Square{
     
     private String name;
+    private float distance;
     private float pollutionRate;
     
-    public StationPollution(float x, float y, String name, float pollutionRate)
+    public StationPollution(float x, float y, String name, float pollutionRate, float distance)
     {
         super(x, y);
         this.name = name;
         this.pollutionRate = pollutionRate;
+        this.distance =distance;
+    }
+    
+    public void setPolRate(float pollutionRate){
+        this.pollutionRate = pollutionRate;
+    }
+    
+    public float getPolRate(){
+        return this.pollutionRate;
+    }
+    
+    public void setName(String name){
+        this.name = name;
+    }
+    
+    public String getName(){
+        return this.name;
+    }
+    
+    public void setDistance(float d){
+        this.distance = d;
+    }
+    
+    public float getDistance(){
+        return this.distance;
     }
 }
