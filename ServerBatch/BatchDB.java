@@ -34,13 +34,25 @@ public class BatchDB {
     
     public static void main(String[] args) throws IOException {
         
+        /***** TEST *****/
+        String csvFileName = "station_particules-pm10_4.csv";
+        File file = new File("");
+        String csvFilePath = file.getAbsolutePath();
+        AirRhoneParser airParser = new AirRhoneParser(csvFilePath, csvFileName);
+        airParser.parse();
+         
+         
+         
+
+        
+        
+        
         //--Init Mongo Database client
         MongoClient mongoClient = new MongoClient();
         MongoDatabase db = mongoClient.getDatabase("habitoudb");
         
         //1. Get Jsonfile from OSM
         String jsonFileName = "output.json";
-        File file = new File("");
         String jsonFilePath = file.getAbsolutePath() + File.separator + jsonFileName;
         
         //2.init Grid
