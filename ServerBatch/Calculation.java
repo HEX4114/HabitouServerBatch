@@ -134,7 +134,7 @@ public class Calculation {
         {
             port = "5000";
         }
-        String request = "http://192.168.1.2:" + port + "/route/v1/driving/" + origin + ";" + destination;
+        String request = "http://127.0.0.1:" + port + "/route/v1/driving/" + origin + ";" + destination;
         return request;
     }
     

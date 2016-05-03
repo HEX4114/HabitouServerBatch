@@ -78,11 +78,14 @@ public class OsmParser {
             amenity.add("atm");
             amenity.add("doctors");
             amenity.add("kindergarten");
+
             interesting.put("amenity", amenity);
             NodeList nWays = doc.getElementsByTagName("way");
             NodeList nNodes = doc.getElementsByTagName("node");
 
             //Searching intersting nodes
+            System.out.println("OSM Parser Nodes");
+            System.out.println("nNodesLength : "+ nNodes.getLength());
             for (int n = 0; n < nNodes.getLength(); n++) {
                 Node nNode = nNodes.item(n);
                 Element eNode = (Element) nNode;
@@ -113,6 +116,8 @@ public class OsmParser {
             }
 
             //Searching intersting ways
+            System.out.println("OSM Parser Ways");
+            System.out.println("nWaysLength : "+ nWays.getLength());
             for (int w = 0; w < nWays.getLength(); w++) {
                     Node nWay = nWays.item(w);
                     Element eWay = (Element) nWay;
