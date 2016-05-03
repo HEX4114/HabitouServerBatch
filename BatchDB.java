@@ -36,7 +36,84 @@ public class BatchDB {
     
     public static void main(String[] args) throws IOException {
         
+        //--Keyboard input
+        String str;
+        while(true){
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Which db ?");
+            System.out.println("GL for Grand Lyon");
+            System.out.println("V for Villeurbanne");
+            System.out.println("L1 for Lyon 1");
+            str = sc.nextLine();
+            if (str.equals("V") || str.equals("GL") || str.equals("L1"))break;
+            System.out.println("incorrect value");
+        }
+        System.out.println("You choose : " + str);
+        
+        Grid grid = new Grid();
+        String table ="";
+        switch (str){
+            case "GL" :
+                table = "squaresGL";
+                System.out.println("Init Grid Grand Lyon");
+                grid.setLat1(45.56f);
+                grid.setLat2(45.92f);
+                grid.setLong1(4.66f);
+                grid.setLong2(5.07f);
+                grid.setNLat(0.005f);
+                grid.setNLong(0.0075f);
+                grid.initGrid();
+                break;
+                
+            case "V" : 
+                table = "squaresV";
+                System.out.println("Init Grid Villeurbanne");
+                grid.setLat1(45.75f);
+                grid.setLat2(45.79f);
+                grid.setLong1(4.86f);
+                grid.setLong2(4.92f);
+                grid.setNLat(0.0005f);
+                grid.setNLong(0.00075f);
+                grid.initGrid();
+                break;
+            case "L1" :
+                table = "squaresL1";
+                System.out.println("Init Grid Lyon 1");
+                
+                Grid grid1 = new Grid();
+                grid1.setLat1(45.765f);
+                grid1.setLat2(45.775f);
+                grid1.setLong1(4.830f);
+                grid1.setLong2(4.840f);
+                grid1.setNLat(0.0005f);
+                grid1.setNLong(0.00075f);
+                grid1.initGrid();
+                
+                Grid grid2 = new Grid();
+                grid2.setLat1(45.767f);
+                grid2.setLat2(45.775f);
+                grid2.setLong1(4.812f);
+                grid2.setLong2(4.830f);
+                grid2.setNLat(0.0005f);
+                grid2.setNLong(0.00075f);
+                grid2.initGrid();
+                
+                Grid grid3 = new Grid();
+                grid3.setLat1(45.773f);
+                grid3.setLat2(45.775f);
+                grid3.setLong1(4.80975f);
+                grid3.setLong2(4.812f);
+                grid3.setNLat(0.0005f);
+                grid3.setNLong(0.00075f);
+                grid3.initGrid();
+                
+                grid.listSquare.addAll(grid1.listSquare);
+                grid.listSquare.addAll(grid2.listSquare);
+                grid.listSquare.addAll(grid3.listSquare);
+                break;
+        }
         //--Init Mongo Database client
+        System.out.println("Init MongoDB");
         MongoClient mongoClient = new MongoClient();
         MongoDatabase db = mongoClient.getDatabase("habitoudb");
         
@@ -44,18 +121,21 @@ public class BatchDB {
         List<Atm> listAtm = new ArrayList<>(); 
         List<Supermarket> listSuper = new ArrayList<>();
         
-        String fileName = "data_filtered.osm";
+        //--OSM Parser
+        System.out.println("OSM Parser");
+        String fileName = "data_filtered_GRAND.osm";    //Grand Lyon
+        //String fileName = "data_filtered_ZOOM.osm";   //Zoom Lyon
         File file = new File("");
         String path = file.getAbsolutePath()+"/Data_Osmosis/";
         OsmParser osm = new OsmParser(fileName, path, listAtm, listSuper);
         osm.parse();
         listAtm = osm.getAtms();
-        //for (int i =0; i<listAtm.size(); i++){System.out.println("name : " + listAtm.get(i).getName());}
         listSuper = osm.getSupermarkets();
         
         //--Init Grid
-        Grid grid = new Grid();
-        grid.initGrid();
+
+
+        
         
         //--Print informations
         System.out.println("Number of squares : " + grid.listSquare.size());
@@ -129,7 +209,7 @@ public class BatchDB {
                     }
             }
             //--Insertion of square in mongo database
-            InsertMongo im = new InsertMongo(db, square, bestAtmW, bestAtmD, bestSuperW, bestSuperD);
+            InsertMongo im = new InsertMongo(db, table, square, bestAtmW, bestAtmD, bestSuperW, bestSuperD);
         }
     }//--end main
     
@@ -157,8 +237,8 @@ public class BatchDB {
     
     public static Criteria getBestCTimeOsrm(Square square, List<Criteria> listTemp, int modeTransport, Criteria bestWalkingCriteria) throws IOException
     {
-        Criteria bestCDis = listTemp.get(0);
-        float minDist = calc.calculationTimeBird(square, listTemp.get(0));
+        Criteria bestCDis;
+        /*float minDist = calc.calculationTimeBird(square, listTemp.get(0));
         for(int i = 0; i < listTemp.size(); i++)
         {
             float currentDist = calc.calculationTimeBird(square, listTemp.get(i));
@@ -169,8 +249,8 @@ public class BatchDB {
             }
         }
         List<Criteria> bestCriteria = new ArrayList<>();
-        bestCriteria.add(bestCDis);
-        bestCDis = calc.nearestCriteriaOsrm(context, square, bestCriteria, modeTransport, bestWalkingCriteria);
+        bestCriteria.add(bestCDis);*/
+        bestCDis = calc.nearestCriteriaOsrm(context, square, listTemp, modeTransport, bestWalkingCriteria);
         return bestCDis;
     }
     

@@ -21,7 +21,7 @@ import org.bson.Document;
 
 
  public class InsertMongo {
-    public InsertMongo(MongoDatabase db ,Square square, Criteria bestAtmW, Criteria bestAtmD, 
+    public InsertMongo(MongoDatabase db, String table, Square square, Criteria bestAtmW, Criteria bestAtmD, 
                                       Criteria bestSuperW, Criteria bestSuperD){
 
         /*FindIterable<Document> iterable = db.getCollection("squares").find();
@@ -34,7 +34,7 @@ import org.bson.Document;
             }  
         }); */
         
-        db.getCollection("squares").insertOne(
+        db.getCollection(table).insertOne(
                 new Document("lat", square.getLat())
                 .append("long", square.getLon())
                 .append("atm",
