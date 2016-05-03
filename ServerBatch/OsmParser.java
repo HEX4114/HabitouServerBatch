@@ -26,12 +26,16 @@ public class OsmParser {
     private String path;
     private List<Atm> listAtm = new ArrayList<>(); 
     private List<Supermarket> listSuper = new ArrayList<>();
+    private List<Doctor> listDoctor = new ArrayList<>(); 
+    private List<Kindergarten> listKindergarten = new ArrayList<>();
     
-    public OsmParser(String fileName, String path, List<Atm> listA, List<Supermarket> listS){
+    public OsmParser(String fileName, String path, List<Atm> listA, List<Supermarket> listS, List<Doctor> listD, List<Kindergarten> listK){
         this.fileName = fileName;
         this.path = path;
         this.listAtm = listA;
         this.listSuper = listS;
+        this.listDoctor = listD;
+        this.listKindergarten = listK;
     }
     
     public List<Atm> getAtms(){
@@ -39,6 +43,13 @@ public class OsmParser {
     }
     public List<Supermarket> getSupermarkets(){
         return listSuper;        
+    }
+    
+    public List<Doctor> getDoctors(){
+        return listDoctor;        
+    }
+    public List<Kindergarten> getKindergartens(){
+        return listKindergarten;        
     }
     
     public void parse(){
@@ -61,14 +72,12 @@ public class OsmParser {
 
             Hashtable<String, ArrayList<String>> interesting = new Hashtable<String, ArrayList<String>>();
             ArrayList<String> shop = new ArrayList<String>();
-            shop.add("mall");
             shop.add("supermarket");
             interesting.put("shop", shop);
             ArrayList<String> amenity = new ArrayList<String>();
             amenity.add("atm");
-            amenity.add("bicycle_rental");
-            amenity.add("taxi");
-            amenity.add("bus_station");
+            amenity.add("doctors");
+            amenity.add("kindergarten");
             interesting.put("amenity", amenity);
             NodeList nWays = doc.getElementsByTagName("way");
             NodeList nNodes = doc.getElementsByTagName("node");
@@ -163,20 +172,34 @@ public class OsmParser {
     }
     
     private void CreateObject(String type, String name, float lat, float lon){
-        Atm atm = new Atm(0f, 0f, 0f, 0f, "");
-        Supermarket superm = new Supermarket(0f, 0f, 0f, 0f, "");
         switch (type) {
-            case "atm" : 
+            case "atm" :
+                Atm atm = new Atm(0f, 0f, 0f, 0f, "");
                 atm.setLat(lat);
                 atm.setLon(lon);
                 atm.setName(name);
                 listAtm.add(atm);
                 break;
             case "supermarket" :
+                Supermarket superm = new Supermarket(0f, 0f, 0f, 0f, "");
                 superm.setLat(lat);
                 superm.setLon(lon);
                 superm.setName(name); 
                 listSuper.add(superm);
+                break;
+            case "doctors" : 
+                Doctor doctor = new Doctor(0f, 0f, 0f, 0f, "");
+                doctor.setLat(lat);
+                doctor.setLon(lon);
+                doctor.setName(name);
+                listDoctor.add(doctor);
+                break;
+            case "kindergarten" :
+                Kindergarten kinder = new Kindergarten(0f, 0f, 0f, 0f, "");
+                kinder.setLat(lat);
+                kinder.setLon(lon);
+                kinder.setName(name); 
+                listKindergarten.add(kinder);
                 break;
         }
     }

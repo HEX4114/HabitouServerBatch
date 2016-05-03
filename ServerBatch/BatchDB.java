@@ -24,7 +24,7 @@ import java.util.Scanner;
  */
 public class BatchDB {
     
-    public enum criteriasEnum{ATM, POLLUTION, SUPERMARKET};
+    public enum criteriasEnum{ATM, POLLUTION, SUPERMARKET, DOCTOR, KINDERGARTEN};
     public static int[] criterias = {0,1,2};
     public static int[] modeTransports = {0,1}; //0=W & 1=D
     private static Calculation calc = new Calculation();
@@ -45,15 +45,19 @@ public class BatchDB {
         //--Init lists of Criterias
         List<Atm> listAtm = new ArrayList<>(); 
         List<Supermarket> listSuper = new ArrayList<>();
+        List<Doctor> listDoctor = new ArrayList<>(); 
+        List<Kindergarten> listKinder = new ArrayList<>();
         List<StationPollution> listStaPol = new ArrayList<>();
         
         String osmfileName = "data_filtered.osm";
         String osmPath = file.getAbsolutePath()+"/Data_Osmosis/";
-        OsmParser osm = new OsmParser(osmfileName, osmPath, listAtm, listSuper);
+        OsmParser osm = new OsmParser(osmfileName, osmPath, listAtm, listSuper, listDoctor, listKinder);
         osm.parse();
         listAtm = osm.getAtms();
         //for (int i =0; i<listAtm.size(); i++){System.out.println("name : " + listAtm.get(i).getName());}
         listSuper = osm.getSupermarkets();
+        listDoctor = osm.getDoctors();
+        listKinder = osm.getKindergartens();
         
         String csvFileName = "station_particules-pm10_4.csv";
         String csvPath = file.getAbsolutePath();
@@ -68,6 +72,8 @@ public class BatchDB {
         System.out.println("Number of squares : " + grid.listSquare.size());
         System.out.println("Number of atms : " + listAtm.size());
         System.out.println("Number of supermarkets : " + listSuper.size());
+        System.out.println("Number of doctors : " + listDoctor.size());
+        System.out.println("Number of kindergartens : " + listKinder.size());
         
         //--Calculation of best criterias
         List<Criteria> listTemp = new ArrayList<>();
@@ -78,6 +84,10 @@ public class BatchDB {
             Atm bestAtmD = new Atm(0f,0f,0f,0f,"");
             Supermarket bestSuperW = new Supermarket(0f,0f,0f,0f, "");
             Supermarket bestSuperD = new Supermarket(0f,0f,0f,0f, "");
+            Doctor bestDocW = new Doctor(0f,0f,0f,0f,"");
+            Doctor bestDocD = new Doctor(0f,0f,0f,0f,"");
+            Kindergarten bestKinderW = new Kindergarten(0f,0f,0f,0f, "");
+            Kindergarten bestKinderD = new Kindergarten(0f,0f,0f,0f, "");
             StationPollution bestStaPol = new StationPollution(0f,0f,"",0f,0f);
             
             for(criteriasEnum criteria: criteriasEnum.values()){
@@ -134,13 +144,63 @@ public class BatchDB {
                                 }
                             }
                             break;
+                        case DOCTOR :
+                            for (Doctor d : listDoctor){listTemp.add((Criteria) d);}
+                            listTemp = reduceListForSquare(square, listTemp);
+                            for(int modeTransport : modeTransports){
+                                //Criteria bestCTemps = getBestCTimeGoogle(square, listTemp, modeTransport); 
+                                Criteria bestCTemps = getBestCTimeOsrm(square, listTemp, modeTransport, bestDocW); 
+                                switch(modeTransport){
+                                    case 0 :    //Walking
+                                        bestDocW.setTime(bestCTemps.getTime());
+                                        bestDocW.setLat(bestCTemps.getLat());
+                                        bestDocW.setLon(bestCTemps.getLon());
+                                        bestDocW.setName(bestCTemps.getName());
+                                        bestDocW.setDistance(bestCTemps.getDistance());
+                                        break;
+                                    case 1 :    //Driving
+                                        bestDocD.setTime(bestCTemps.getTime());
+                                        bestDocD.setLat(bestCTemps.getLat());
+                                        bestDocD.setLon(bestCTemps.getLon());
+                                        bestDocD.setName(bestCTemps.getName());
+                                        bestDocD.setDistance(bestCTemps.getDistance());
+
+                                        break;
+                                }
+                            }
+                            break;
+                        case KINDERGARTEN : 
+                            for (Kindergarten k : listKinder){listTemp.add((Criteria) k);}
+                            listTemp = reduceListForSquare(square, listTemp);
+                            for(int modeTransport : modeTransports){
+//                              Criteria bestCTemps = getBestCTimeGoogle(square, listTemp, modeTransport); 
+                                Criteria bestCTemps = getBestCTimeOsrm(square, listTemp, modeTransport, bestKinderW); 
+                                switch(modeTransport){
+                                    case 0 :    //Walking
+                                        bestKinderW.setTime(bestCTemps.getTime());
+                                        bestKinderW.setLat(bestCTemps.getLat());
+                                        bestKinderW.setLon(bestCTemps.getLon());
+                                        bestKinderW.setName(bestCTemps.getName());
+                                        bestKinderW.setDistance(bestCTemps.getDistance());
+                                        break;
+                                    case 1 :    //Driving
+                                        bestKinderD.setTime(bestCTemps.getTime());
+                                        bestKinderD.setLat(bestCTemps.getLat());
+                                        bestKinderD.setLon(bestCTemps.getLon());
+                                        bestKinderD.setName(bestCTemps.getName());
+                                        bestKinderD.setDistance(bestCTemps.getDistance());
+
+                                        break;
+                                }
+                            }
+                            break;
                         case POLLUTION :
                             bestStaPol = getBestCAir(square, listStaPol);
                             break;
                     }
             }
             //--Insertion of square in mongo database
-            InsertMongo im = new InsertMongo(db, square, bestAtmW, bestAtmD, bestSuperW, bestSuperD, bestStaPol);
+            InsertMongo im = new InsertMongo(db, square, bestAtmW, bestAtmD, bestSuperW, bestSuperD,bestDocW, bestDocD, bestKinderW, bestKinderD, bestStaPol);
         }
     }//--end main
     

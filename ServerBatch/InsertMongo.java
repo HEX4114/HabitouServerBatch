@@ -22,7 +22,8 @@ import org.bson.Document;
 
  public class InsertMongo {
     public InsertMongo(MongoDatabase db ,Square square, Criteria bestAtmW, Criteria bestAtmD, 
-                                      Criteria bestSuperW, Criteria bestSuperD, StationPollution bestStaPol){
+                                      Criteria bestSuperW, Criteria bestSuperD, Criteria bestDocW, Criteria bestDocD, 
+                                      Criteria bestKinderW, Criteria bestKinderD, StationPollution bestStaPol){
 
         /*FindIterable<Document> iterable = db.getCollection("squares").find();
 
@@ -75,6 +76,46 @@ import org.bson.Document;
                                 .append("lat", bestSuperD.getLat())
                                 .append("long", bestSuperD.getLon())
                                 .append("distance", bestSuperD.getDistance())
+                        )
+                )
+                .append("doctor",
+                        new Document()
+                        .append("walk", 
+                                new Document()
+                                .append("name", bestDocW.getName())
+                                .append("time", bestDocW.getTime())
+                                .append("lat", bestDocW.getLat())
+                                .append("long", bestDocW.getLon())
+                                .append("distance", bestDocW.getDistance())
+                                
+                        )
+                        .append("drive", 
+                                new Document()
+                                .append("name", bestDocD.getName())
+                                .append("time", bestDocD.getTime())
+                                .append("lat", bestDocD.getLat())
+                                .append("long", bestDocD.getLon())
+                                .append("distance", bestDocD.getDistance())
+                                
+                        )
+                )
+                .append("kindergarten",
+                        new Document()
+                        .append("walk", 
+                                new Document()
+                                .append("name", bestKinderW.getName())
+                                .append("time", bestKinderW.getTime())
+                                .append("lat", bestKinderW.getLat())
+                                .append("long", bestKinderW.getLon())
+                                .append("Distance", bestKinderW.getDistance())
+                        )
+                        .append("drive", 
+                                new Document()
+                                .append("name", bestKinderD.getName())
+                                .append("time", bestKinderD.getTime())
+                                .append("lat", bestKinderD.getLat())
+                                .append("long", bestKinderD.getLon())
+                                .append("distance", bestKinderD.getDistance())
                         )
                 )
                 .append("pollution",
