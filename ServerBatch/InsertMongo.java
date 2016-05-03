@@ -22,18 +22,8 @@ import org.bson.Document;
 
  public class InsertMongo {
     public InsertMongo(MongoDatabase db, String table, Square square, Criteria bestAtmW, Criteria bestAtmD, 
-                                      Criteria bestSuperW, Criteria bestSuperD){
+                                      Criteria bestSuperW, Criteria bestSuperD, StationPollution bestStaPol){
 
-        /*FindIterable<Document> iterable = db.getCollection("squares").find();
-
-        iterable.forEach(new Block<Document>() {
-            @Override
-            public void apply(final Document document) 
-            {
-                System.out.println(document);
-            }  
-        }); */
-        
         db.getCollection(table).insertOne(
                 new Document("lat", square.getLat())
                 .append("long", square.getLon())
@@ -76,6 +66,15 @@ import org.bson.Document;
                                 .append("long", bestSuperD.getLon())
                                 .append("distance", bestSuperD.getDistance())
                         )
+                )
+                .append("pollution",
+                            new Document()
+                            .append("name", bestStaPol.getName())
+                            .append("rate", bestStaPol.getPolRate())
+                            .append("lat", bestStaPol.getLat())
+                            .append("long", bestStaPol.getLon())
+                            .append("distance", bestStaPol.getDistance())
+                        
                 )
         );
         //System.out.println("ok :"+square.toString());

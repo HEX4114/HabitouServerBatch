@@ -167,16 +167,16 @@ public class OsmParser {
     }
     
     private void CreateObject(String type, String name, float lat, float lon){
-        Atm atm = new Atm(0f, 0f, 0f, 0f, "");
-        Supermarket superm = new Supermarket(0f, 0f, 0f, 0f, "");
         switch (type) {
             case "atm" : 
+                Atm atm = new Atm(0f, 0f, 0f, 0f, "");
                 atm.setLat(lat);
                 atm.setLon(lon);
                 atm.setName(name);
                 listAtm.add(atm);
                 break;
             case "supermarket" :
+                Supermarket superm = new Supermarket(0f, 0f, 0f, 0f, "");
                 superm.setLat(lat);
                 superm.setLon(lon);
                 superm.setName(name); 

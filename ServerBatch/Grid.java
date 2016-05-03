@@ -14,8 +14,6 @@ import java.util.List;
  * @author adrien
  */
 
-
-
 public class Grid {
 
     List<Square> listSquare = new ArrayList<Square>();  
@@ -25,13 +23,6 @@ public class Grid {
     float long1;
     float lat2; 
     float long2;
-    
-    //--Grand Lyon
-    //float nLat = 0.005f;      //Lat
-    //float nLong = 0.0075f;    //Long 
-    //--Zoom Lyon
-    //float nLat = 0.0005f;     //Lat
-    //float nLong = 0.00075f;   //Long 
     
     public Grid(){
         this.nLong = 0f;
@@ -60,7 +51,7 @@ public class Grid {
     public void setNLong(float nLong){
         this.nLong =nLong;
     }
-    
+   
     public void initGrid(){
         //Latitude
         //for(float i=45.74f; i<45.78005f; i+=nLat) //zoom Lyon

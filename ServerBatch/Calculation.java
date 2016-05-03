@@ -192,7 +192,7 @@ public class Calculation {
         return R * c;
     }
     
-    public float calculationTimeBird(Square origin, Criteria destination)
+    public float calculationTimeBird(Square origin, Square destination)
     {
         float latOri = origin.getLat();
         float lonOri = origin.getLon();

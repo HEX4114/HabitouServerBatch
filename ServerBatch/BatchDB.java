@@ -24,8 +24,8 @@ import java.util.Scanner;
  */
 public class BatchDB {
     
-    public enum criteriasEnum{ATM, TRANSPORT, SUPERMARKET};
-    public static int[] criterias = {0,1,2};
+    public enum criteriasEnum{ATM, POLLUTION, SUPERMARKET};
+    //public static int[] criterias = {0,1,2};
     public static int[] modeTransports = {0,1}; //0=W & 1=D
     private static Calculation calc = new Calculation();
     
@@ -36,6 +36,7 @@ public class BatchDB {
     
     public static void main(String[] args) throws IOException {
         
+
         //--Keyboard input
         String str;
         while(true){
@@ -112,6 +113,7 @@ public class BatchDB {
                 grid.listSquare.addAll(grid3.listSquare);
                 break;
         }
+
         //--Init Mongo Database client
         System.out.println("Init MongoDB");
         MongoClient mongoClient = new MongoClient();
@@ -120,22 +122,23 @@ public class BatchDB {
         //--Init lists of Criterias
         List<Atm> listAtm = new ArrayList<>(); 
         List<Supermarket> listSuper = new ArrayList<>();
+        List<StationPollution> listStaPol = new ArrayList<>();
         
         //--OSM Parser
         System.out.println("OSM Parser");
-        String fileName = "data_filtered_GRAND.osm";    //Grand Lyon
+        String osmFileName = "data_filtered_GRAND.osm";    //Grand Lyon
         //String fileName = "data_filtered_ZOOM.osm";   //Zoom Lyon
         File file = new File("");
-        String path = file.getAbsolutePath()+"/Data_Osmosis/";
-        OsmParser osm = new OsmParser(fileName, path, listAtm, listSuper);
+        String osmPath = file.getAbsolutePath()+"/Data_Osmosis/";
+        OsmParser osm = new OsmParser(osmFileName, osmPath, listAtm, listSuper);
         osm.parse();
         listAtm = osm.getAtms();
         listSuper = osm.getSupermarkets();
         
-        //--Init Grid
-
-
-        
+        String csvFileName = "station_particules-pm10_4.csv";
+        String csvPath = file.getAbsolutePath();
+        AirRhoneParser airParser = new AirRhoneParser(csvPath, csvFileName);
+        listStaPol = airParser.parse();
         
         //--Print informations
         System.out.println("Number of squares : " + grid.listSquare.size());
@@ -151,6 +154,7 @@ public class BatchDB {
             Atm bestAtmD = new Atm(0f,0f,0f,0f,"");
             Supermarket bestSuperW = new Supermarket(0f,0f,0f,0f, "");
             Supermarket bestSuperD = new Supermarket(0f,0f,0f,0f, "");
+            StationPollution bestStaPol = new StationPollution(0f,0f,"",0f,0f);
             
             for(criteriasEnum criteria: criteriasEnum.values()){
                 listTemp.clear();
@@ -206,10 +210,13 @@ public class BatchDB {
                                 }
                             }
                             break;
+                        case POLLUTION :
+                            bestStaPol = getBestCAir(square, listStaPol);
+                            break;
                     }
             }
             //--Insertion of square in mongo database
-            InsertMongo im = new InsertMongo(db, table, square, bestAtmW, bestAtmD, bestSuperW, bestSuperD);
+            InsertMongo im = new InsertMongo(db, table, square, bestAtmW, bestAtmD, bestSuperW, bestSuperD, bestStaPol);
         }
     }//--end main
     
@@ -251,6 +258,23 @@ public class BatchDB {
         List<Criteria> bestCriteria = new ArrayList<>();
         bestCriteria.add(bestCDis);*/
         bestCDis = calc.nearestCriteriaOsrm(context, square, listTemp, modeTransport, bestWalkingCriteria);
+        return bestCDis;
+    }
+    
+    public static StationPollution getBestCAir(Square square, List<StationPollution> listTemp) throws IOException
+    {
+        StationPollution bestCDis = listTemp.get(0);
+        float minDist = calc.calculationTimeBird(square, listTemp.get(0));
+        for(int i = 0; i < listTemp.size(); i++)
+        {
+            float currentDist = calc.calculationTimeBird(square, listTemp.get(i));
+            if(currentDist < minDist)
+            {
+                minDist = currentDist;
+                bestCDis = listTemp.get(i);
+                bestCDis.setDistance(minDist);
+            }
+        }
         return bestCDis;
     }
     
